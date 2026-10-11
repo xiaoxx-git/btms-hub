@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>BTMS Hub | 新能源电池热管理液冷机组全生命周期工程平台</title>
   <style>
     :root {
@@ -25,7 +25,7 @@
       --radius: 8px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
@@ -36,7 +36,7 @@
       overflow: hidden;
     }
 
-    /* Sidebar */
+    /* ================= SIDEBAR ================= */
     aside {
       width: 280px;
       background-color: #0b1120;
@@ -44,6 +44,8 @@
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
+      z-index: 100;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .brand-header {
@@ -55,8 +57,8 @@
     }
 
     .brand-icon {
-      width: 40px;
-      height: 40px;
+      width: 38px;
+      height: 38px;
       background: linear-gradient(135deg, #0284c7, #2563eb);
       border-radius: 10px;
       display: flex;
@@ -97,7 +99,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 10px 12px;
+      padding: 11px 12px;
       border-radius: var(--radius);
       color: #94a3b8;
       font-size: 13px;
@@ -106,7 +108,7 @@
       margin-bottom: 3px;
     }
 
-    .nav-item:hover {
+    .nav-item:hover, .nav-item:active {
       background-color: #1e293b;
       color: #f8fafc;
     }
@@ -127,45 +129,83 @@
       color: #38bdf8;
     }
 
-    /* Main */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(3px);
+      z-index: 90;
+    }
+
+    /* ================= MAIN ================= */
     main {
       flex: 1;
       display: flex;
       flex-direction: column;
       overflow: hidden;
       background-color: var(--bg);
+      width: 100%;
     }
 
     header {
-      height: 60px;
+      height: 56px;
       background-color: #0f172a;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 24px;
+      padding: 0 16px;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .menu-toggle-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      background: #1e293b;
+      border: 1px solid var(--border);
+      color: #f8fafc;
+      font-size: 18px;
+      cursor: pointer;
       flex-shrink: 0;
     }
 
     .breadcrumb {
       font-size: 13px;
       color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .breadcrumb strong {
+      color: #f8fafc;
     }
 
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
+      flex-shrink: 0;
     }
 
     .btn {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 7px 14px;
+      gap: 4px;
+      padding: 6px 12px;
       border-radius: 6px;
       font-size: 12px;
       font-weight: 600;
@@ -173,32 +213,24 @@
       border: 1px solid transparent;
       text-decoration: none;
       transition: all 0.2s;
+      white-space: nowrap;
     }
 
     .btn-primary {
       background: linear-gradient(135deg, #0284c7, #2563eb);
       color: #fff;
-      box-shadow: 0 2px 6px rgba(2,132,199,0.3);
     }
-    .btn-primary:hover {
-      box-shadow: 0 4px 12px rgba(2,132,199,0.5);
-      transform: translateY(-1px);
-    }
-
     .btn-outline {
       border-color: var(--border);
       background-color: #1e293b;
       color: #cbd5e1;
     }
-    .btn-outline:hover {
-      background-color: #334155;
-      color: #fff;
-    }
 
     .content-viewport {
       flex: 1;
       overflow-y: auto;
-      padding: 24px 30px;
+      padding: 20px 24px;
+      -webkit-overflow-scrolling: touch;
     }
 
     .tab-content {
@@ -211,27 +243,27 @@
     .tab-content.active { display: block; }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
+      from { opacity: 0; transform: translateY(4px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     .page-header {
-      margin-bottom: 24px;
-      padding-bottom: 16px;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
       border-bottom: 1px solid var(--border);
     }
 
     .page-title {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 700;
       color: #f8fafc;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .page-desc {
-      font-size: 14px;
+      font-size: 13px;
       color: var(--text-muted);
       margin-top: 6px;
       line-height: 1.6;
@@ -240,31 +272,31 @@
     .grid-2 {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-      margin-bottom: 24px;
+      gap: 18px;
+      margin-bottom: 20px;
     }
 
     .grid-3 {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-      margin-bottom: 24px;
+      gap: 16px;
+      margin-bottom: 20px;
     }
 
     .card {
       background: var(--surface-card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 22px;
+      padding: 18px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     .card-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #f8fafc;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -272,22 +304,22 @@
 
     .badge {
       font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 12px;
+      padding: 2px 7px;
+      border-radius: 10px;
       font-weight: 600;
     }
-    .badge-blue { background: rgba(2,132,199,0.2); color: #38bdf8; border: 1px solid rgba(2,132,199,0.4); }
-    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.4); }
-    .badge-amber { background: rgba(217,119,6,0.2); color: #fbbf24; border: 1px solid rgba(217,119,6,0.4); }
-    .badge-red { background: rgba(220,38,38,0.2); color: #f87171; border: 1px solid rgba(220,38,38,0.4); }
+    .badge-blue { background: rgba(2,132,199,0.25); color: #38bdf8; border: 1px solid rgba(2,132,199,0.4); }
+    .badge-green { background: rgba(16,185,129,0.25); color: #34d399; border: 1px solid rgba(16,185,129,0.4); }
+    .badge-amber { background: rgba(217,119,6,0.25); color: #fbbf24; border: 1px solid rgba(217,119,6,0.4); }
+    .badge-red { background: rgba(220,38,38,0.25); color: #f87171; border: 1px solid rgba(220,38,38,0.4); }
 
     /* ================= P&ID ANIMATED SCHEMATIC ================= */
     .pid-container {
       background: #0b1120;
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 16px;
-      margin-bottom: 24px;
+      padding: 14px;
+      margin-bottom: 20px;
       position: relative;
     }
 
@@ -296,17 +328,20 @@
       align-items: center;
       justify-content: space-between;
       margin-bottom: 12px;
-      padding-bottom: 12px;
+      padding-bottom: 10px;
       border-bottom: 1px solid #1e293b;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .pid-mode-btns {
       display: flex;
       gap: 8px;
+      flex-wrap: wrap;
     }
 
     .mode-btn {
-      padding: 5px 12px;
+      padding: 6px 12px;
       border-radius: 6px;
       font-size: 12px;
       font-weight: 600;
@@ -323,7 +358,21 @@
       box-shadow: 0 0 10px rgba(56,189,248,0.4);
     }
 
-    /* Animated pipes */
+    .svg-scroll-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 8px;
+      background: #070d17;
+      padding: 6px 0;
+    }
+
+    .svg-scroll-wrapper svg {
+      min-width: 780px;
+      display: block;
+      margin: 0 auto;
+    }
+
     .pipe-flow {
       stroke-dasharray: 8, 6;
       animation: dashFlow 1s linear infinite;
@@ -338,7 +387,6 @@
 
     .interactive-comp {
       cursor: pointer;
-      transition: all 0.2s ease;
     }
     .interactive-comp:hover rect,
     .interactive-comp:hover circle {
@@ -352,36 +400,32 @@
       stroke-width: 3px !important;
     }
 
-    /* Drawer inspection panel */
     .comp-inspect-drawer {
       background: #1e293b;
       border: 1px solid #38bdf8;
       border-radius: 8px;
-      padding: 18px;
+      padding: 16px;
       margin-top: 14px;
       display: none;
       animation: fadeIn 0.2s ease;
     }
-    .comp-inspect-drawer.active {
-      display: block;
-    }
+    .comp-inspect-drawer.active { display: block; }
 
-    /* ================= FAULT TREE DECISION FLOW ================= */
+    /* ================= FAULT TREE WIZARD ================= */
     .fault-tree-wizard {
       background: #0b1120;
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 24px;
+      padding: 16px;
+      margin-bottom: 20px;
     }
 
     .tree-step-card {
       background: #1e293b;
       border-left: 4px solid #0284c7;
       border-radius: 6px;
-      padding: 16px;
+      padding: 14px;
       margin-bottom: 12px;
-      transition: all 0.2s;
     }
     .tree-step-title {
       font-size: 14px;
@@ -392,15 +436,16 @@
     .tree-step-desc {
       font-size: 13px;
       color: #cbd5e1;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       line-height: 1.5;
     }
     .tree-step-actions {
       display: flex;
-      gap: 10px;
+      gap: 8px;
+      flex-wrap: wrap;
     }
     .branch-btn {
-      padding: 6px 14px;
+      padding: 8px 14px;
       border-radius: 6px;
       font-size: 12px;
       font-weight: 600;
@@ -408,9 +453,8 @@
       border: 1px solid var(--border);
       background: #334155;
       color: #fff;
-      transition: all 0.15s;
     }
-    .branch-btn:hover {
+    .branch-btn:hover, .branch-btn:active {
       background: #0284c7;
       border-color: #38bdf8;
     }
@@ -422,50 +466,44 @@
       padding: 14px;
       margin-top: 12px;
     }
-    .conclusion-title {
-      color: #4ade80;
-      font-weight: 700;
-      font-size: 14px;
-      margin-bottom: 4px;
-    }
 
-    /* ================= SOP TIMELINE ================= */
+    /* ================= TIMELINE ================= */
     .timeline {
       position: relative;
-      padding: 20px 0 20px 24px;
+      padding: 10px 0 10px 22px;
     }
     .timeline::before {
       content: '';
       position: absolute;
-      left: 7px;
-      top: 24px;
-      bottom: 24px;
+      left: 6px;
+      top: 16px;
+      bottom: 16px;
       width: 2px;
       background: #334155;
     }
     .timeline-item {
       position: relative;
-      margin-bottom: 24px;
+      margin-bottom: 18px;
     }
     .timeline-dot {
       position: absolute;
-      left: -24px;
+      left: -22px;
       top: 4px;
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
       background: #0284c7;
       border: 3px solid #0f172a;
-      box-shadow: 0 0 8px #0284c7;
+      box-shadow: 0 0 6px #0284c7;
     }
     .timeline-content {
       background: #1e293b;
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 14px 18px;
+      padding: 12px 14px;
     }
     .timeline-title {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       color: #f8fafc;
       margin-bottom: 4px;
@@ -473,17 +511,24 @@
     .timeline-gate {
       display: inline-block;
       font-size: 11px;
-      background: rgba(217,119,6,0.2);
+      background: rgba(217,119,6,0.25);
       color: #fbbf24;
-      padding: 2px 8px;
+      padding: 2px 7px;
       border-radius: 4px;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       font-weight: 600;
     }
 
     /* Tables */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 6px;
+    }
     .data-table {
       width: 100%;
+      min-width: 580px;
       border-collapse: collapse;
       font-size: 13px;
       text-align: left;
@@ -492,67 +537,51 @@
       background-color: #0b1120;
       color: #94a3b8;
       font-weight: 600;
-      padding: 12px 14px;
+      padding: 10px 12px;
       border-bottom: 1px solid var(--border);
     }
     .data-table td {
-      padding: 12px 14px;
+      padding: 10px 12px;
       border-bottom: 1px solid var(--border);
       color: #e2e8f0;
       line-height: 1.5;
     }
     .data-table tr:hover td { background-color: #273549; }
 
-    /* Component Grid */
+    /* Component Card */
     .component-card {
       background: #1e293b;
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 18px;
-      margin-bottom: 16px;
-      transition: all 0.2s;
-    }
-    .component-card:hover {
-      border-color: #38bdf8;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      padding: 16px;
+      margin-bottom: 14px;
     }
     .comp-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 6px;
     }
-    .comp-name {
-      font-size: 15px;
-      font-weight: 700;
-      color: #f8fafc;
-    }
-    .comp-section {
-      font-size: 13px;
-      line-height: 1.6;
-      margin-bottom: 6px;
-      color: #cbd5e1;
-    }
-    .comp-label {
-      font-weight: 600;
-      color: #94a3b8;
-    }
+    .comp-name { font-size: 15px; font-weight: 700; color: #f8fafc; }
+    .comp-section { font-size: 13px; line-height: 1.6; margin-bottom: 6px; color: #cbd5e1; }
+    .comp-label { font-weight: 600; color: #94a3b8; }
 
     .pill-filter {
       display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
+      gap: 6px;
+      margin-bottom: 14px;
       flex-wrap: wrap;
     }
     .pill {
       font-size: 12px;
-      padding: 6px 14px;
-      border-radius: 16px;
+      padding: 5px 12px;
+      border-radius: 14px;
       border: 1px solid var(--border);
       background: #1e293b;
       color: #94a3b8;
       cursor: pointer;
-      transition: all 0.15s;
     }
     .pill.active {
       background: #0284c7;
@@ -562,22 +591,18 @@
     }
 
     .search-box {
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       display: flex;
-      gap: 10px;
+      gap: 8px;
     }
     .search-input {
       flex: 1;
-      padding: 10px 14px;
+      padding: 9px 12px;
       border: 1px solid var(--border);
       border-radius: 6px;
       background: #0b1120;
       color: #fff;
       font-size: 13px;
-    }
-    .search-input:focus {
-      outline: none;
-      border-color: #38bdf8;
     }
 
     /* Calculator */
@@ -585,21 +610,21 @@
       background: #0b1120;
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 18px;
+      padding: 16px;
     }
-    .form-group { margin-bottom: 14px; }
+    .form-group { margin-bottom: 12px; }
     .form-label { display: block; font-size: 12px; font-weight: 600; color: #94a3b8; margin-bottom: 4px; }
-    .form-input { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; background: #1e293b; color: #fff; }
-    .calc-result { background: rgba(2,132,199,0.15); border: 1px solid #0284c7; border-radius: 6px; padding: 14px; margin-top: 16px; }
-    .calc-stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
-    .calc-stat { background: #1e293b; padding: 12px; border-radius: 4px; border: 1px solid #334155; }
-    .calc-stat-val { font-size: 18px; font-weight: 700; color: #38bdf8; }
-    .calc-stat-lbl { font-size: 11px; color: #94a3b8; }
+    .form-input { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; background: #1e293b; color: #fff; }
+    .calc-result { background: rgba(2,132,199,0.15); border: 1px solid #0284c7; border-radius: 6px; padding: 12px; margin-top: 14px; }
+    .calc-stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+    .calc-stat { background: #1e293b; padding: 10px; border-radius: 4px; border: 1px solid #334155; }
+    .calc-stat-val { font-size: 16px; font-weight: 700; color: #38bdf8; }
+    .calc-stat-lbl { font-size: 10px; color: #94a3b8; }
 
     .tech-list { list-style: none; }
     .tech-list li {
       position: relative;
-      padding-left: 18px;
+      padding-left: 16px;
       margin-bottom: 8px;
       font-size: 13px;
       color: #cbd5e1;
@@ -609,16 +634,61 @@
       content: "•";
       color: #38bdf8;
       position: absolute;
-      left: 4px;
-      font-size: 16px;
+      left: 2px;
+      font-size: 14px;
       line-height: 1;
+    }
+
+    /* ================= MOBILE OPTIMIZATION MEDIA QUERY ================= */
+    @media (max-width: 768px) {
+      aside {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 270px;
+        transform: translateX(-100%);
+        box-shadow: 4px 0 20px rgba(0,0,0,0.5);
+      }
+      aside.open {
+        transform: translateX(0);
+      }
+      .sidebar-overlay.active {
+        display: block;
+      }
+      .menu-toggle-btn {
+        display: inline-flex;
+      }
+      .content-viewport {
+        padding: 16px 12px;
+      }
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+      .calc-stat-grid {
+        grid-template-columns: 1fr;
+      }
+      .header-actions .btn {
+        padding: 5px 8px;
+        font-size: 11px;
+      }
+      .page-title {
+        font-size: 18px;
+      }
+      .page-desc {
+        font-size: 12px;
+      }
     }
   </style>
 </head>
 <body>
 
+  <!-- Backdrop overlay for mobile sidebar -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
   <!-- Sidebar -->
-  <aside>
+  <aside id="sidebar">
     <div class="brand-header">
       <div class="brand-icon">❄</div>
       <div>
@@ -629,34 +699,34 @@
 
     <div class="nav-container">
       <div class="nav-group-title">核心导航</div>
-      <div class="nav-item active" onclick="switchTab('overview')">
+      <div class="nav-item active" onclick="navTo('overview')">
         <span>📌 系统总览与架构</span>
       </div>
 
       <div class="nav-group-title">动态交互与工程专题</div>
-      <div class="nav-item" onclick="switchTab('pid')">
+      <div class="nav-item" onclick="navTo('pid')">
         <span>🌀 动态 P&ID 原理流程图</span>
         <span class="nav-badge" style="background:#0284c7; color:#fff;">流体仿真</span>
       </div>
-      <div class="nav-item" onclick="switchTab('components')">
+      <div class="nav-item" onclick="navTo('components')">
         <span>📦 14大零部件功能图鉴</span>
         <span class="nav-badge">核心器件</span>
       </div>
-      <div class="nav-item" onclick="switchTab('design')">
+      <div class="nav-item" onclick="navTo('design')">
         <span>📐 设计研发与计算器</span>
         <span class="nav-badge">选型工具</span>
       </div>
-      <div class="nav-item" onclick="switchTab('manufacturing')">
+      <div class="nav-item" onclick="navTo('manufacturing')">
         <span>🏭 生产制造与SOP时间轴</span>
         <span class="nav-badge">工艺红线</span>
       </div>
-      <div class="nav-item" onclick="switchTab('service')">
+      <div class="nav-item" onclick="navTo('service')">
         <span>🔧 引导式故障排查决策树</span>
         <span class="nav-badge" style="background:#b91c1c; color:#fff;">DTC诊断</span>
       </div>
 
       <div class="nav-group-title">云端数据底座</div>
-      <div class="nav-item" onclick="switchTab('database')">
+      <div class="nav-item" onclick="navTo('database')">
         <span>📁 Google Drive 数据库</span>
         <span class="nav-badge">已挂载</span>
       </div>
@@ -666,12 +736,15 @@
   <!-- Main Viewport -->
   <main>
     <header>
-      <div class="breadcrumb">
-        <span>新能源电池热管理项目</span> <span>/</span> <strong id="currentTabLabel">系统总览与架构</strong>
+      <div class="header-left">
+        <button class="menu-toggle-btn" onclick="toggleSidebar()" aria-label="Toggle Menu">☰</button>
+        <div class="breadcrumb">
+          <strong id="currentTabLabel">系统总览与架构</strong>
+        </div>
       </div>
       <div class="header-actions">
-        <a class="btn btn-outline" href="https://drive.google.com/drive/folders/1binq2Od7BRrA72HzpGk1sYn4-swT_KLT" target="_blank">📁 云端根目录</a>
-        <a class="btn btn-primary" href="https://docs.google.com/spreadsheets/d/16DZHyBPjhmPFJqF4GW9iJ12KR4hUODWLgGBBV_JH2qk/edit" target="_blank">📊 Google Sheet 数据库</a>
+        <a class="btn btn-outline" href="https://drive.google.com/drive/folders/1binq2Od7BRrA72HzpGk1sYn4-swT_KLT" target="_blank">📁 云端</a>
+        <a class="btn btn-primary" href="https://docs.google.com/spreadsheets/d/16DZHyBPjhmPFJqF4GW9iJ12KR4hUODWLgGBBV_JH2qk/edit" target="_blank">📊 数据表</a>
       </div>
     </header>
 
@@ -680,8 +753,8 @@
       <!-- Tab 0: Overview -->
       <section id="tab-overview" class="tab-content active">
         <div class="page-header">
-          <h1 class="page-title">新能源电池热管理项目 · 现代化交互工程平台</h1>
-          <p class="page-desc">脱离枯燥静态表格，集成“动态流体 P&ID 仿真流程图 ➔ 14大零部件图鉴 ➔ 选型计算器 ➔ 工艺SOP时间轴 ➔ 引导式DTC排查决策树”。</p>
+          <h1 class="page-title">新能源电池热管理 · 移动端工程学习平台</h1>
+          <p class="page-desc">集成“动态流体 P&ID 仿真流程图 ➔ 14大零部件图鉴 ➔ 选型计算器 ➔ 工艺SOP时间轴 ➔ 引导式DTC排查决策树”。</p>
         </div>
 
         <div class="grid-3">
@@ -690,7 +763,7 @@
               <span>01. 动态 P&ID 原理图</span>
               <span class="badge badge-blue">流体动效</span>
             </div>
-            <p style="font-size:13px; color:#94a3b8; margin-bottom:12px;">冷媒回路与乙二醇水回路流体动态流动仿真，点击器件高亮弹出剖析详情。</p>
+            <p style="font-size:13px; color:#94a3b8; margin-bottom:12px;">冷媒与乙二醇水回路流体动态流动仿真，点击器件高亮弹出剖析详情。</p>
             <button class="btn btn-outline" style="font-size:11px;">进入动态原理图 ➔</button>
           </div>
 
@@ -699,7 +772,7 @@
               <span>02. 14大零部件功能库</span>
               <span class="badge badge-green">器件图鉴</span>
             </div>
-            <p style="font-size:13px; color:#94a3b8; margin-bottom:12px;">压缩机、板换、MCHE、EEV、水泵、PTC、四通阀等 14 大核心件的选型与失效库。</p>
+            <p style="font-size:13px; color:#94a3b8; margin-bottom:12px;">压缩机、板换、MCHE、EEV、水泵、PTC、四通阀等 14 大核心件功能库。</p>
             <button class="btn btn-outline" style="font-size:11px;">查看零部件库 ➔</button>
           </div>
 
@@ -708,7 +781,7 @@
               <span>03. 引导式排查决策树</span>
               <span class="badge badge-red">智能诊断</span>
             </div>
-            <p style="font-size:13px; color:#94a3b8; margin-bottom:12px;">像车载诊断电脑一样，提供交互式分支推导，一步步定位高压、断流与过热故障。</p>
+            <p style="font-size:13px; color:#94a3b8; margin-bottom:12px;">像车载诊断电脑一样，提供交互式分支推导，一步步定位故障根因。</p>
             <button class="btn btn-outline" style="font-size:11px;">开始故障诊断 ➔</button>
           </div>
         </div>
@@ -716,20 +789,20 @@
         <div class="grid-2">
           <div class="card">
             <div class="card-title">
-              <span>04. 生产工艺与检定 (SOP 时间轴)</span>
+              <span>04. 生产制造 SOP 时间轴</span>
               <span class="badge badge-amber">质量红线</span>
             </div>
-            <p style="font-size:13px; color:#94a3b8; margin-bottom:12px;">充氮钎焊规范、2.8MPa 保压、氦检漏率(<2g/y)、真空度(≤30Pa)与操作工技能矩阵。</p>
-            <button class="btn btn-outline" style="font-size:11px;" onclick="switchTab('manufacturing')">查看工艺流程时间轴 ➔</button>
+            <p style="font-size:13px; color:#94a3b8; margin-bottom:12px;">充氮钎焊规范、2.8MPa 保压、氦检漏率(<2g/y)、真空度(≤30Pa)与技能矩阵。</p>
+            <button class="btn btn-outline" style="font-size:11px;" onclick="switchTab('manufacturing')">查看工艺时间轴 ➔</button>
           </div>
 
           <div class="card">
             <div class="card-title">
-              <span>05. 云端 Google Drive 数据库挂载</span>
+              <span>05. 云端 Google Drive 挂载</span>
               <span class="badge badge-blue">数据同步</span>
             </div>
-            <p style="font-size:13px; color:#94a3b8; margin-bottom:12px;">底层由云端 Google Sheet 数据库实时驱动，支持随时增补修改零部件与故障代码。</p>
-            <button class="btn btn-outline" style="font-size:11px;" onclick="switchTab('database')">查看数据库映射详情 ➔</button>
+            <p style="font-size:13px; color:#94a3b8; margin-bottom:12px;">底层由云端 Google Sheet 数据库实时驱动，支持随时增补修改条目。</p>
+            <button class="btn btn-outline" style="font-size:11px;">查看数据库映射 ➔</button>
           </div>
         </div>
       </section>
@@ -737,170 +810,147 @@
       <!-- Tab 1: Interactive Animated P&ID -->
       <section id="tab-pid" class="tab-content">
         <div class="page-header">
-          <h1 class="page-title">🌀 电池液冷机组动态制冷与水回路 P&ID 系统流程图</h1>
-          <p class="page-desc">真实反应蒸汽压缩制冷循环（氟路）与乙二醇载冷循环（水路）的耦合换热过程。点击任意器件查看技术剖析。</p>
+          <h1 class="page-title">🌀 动态制冷与水回路 P&ID 系统流程图</h1>
+          <p class="page-desc">蒸汽压缩制冷循环（氟路）与乙二醇载冷循环（水路）耦合换热过程。手机端支持横向滑动查看全景，点击器件查看技术剖析。</p>
         </div>
 
         <div class="pid-container">
           <div class="pid-toolbar">
             <div class="pid-mode-btns">
-              <span style="font-size:13px; font-weight:700; color:#cbd5e1; margin-right:8px; display:flex; align-items:center;">运行模式：</span>
-              <button class="mode-btn active" id="btnModeCooling" onclick="setSystemMode('cooling')">❄ 制冷运行模式 (Cooling)</button>
-              <button class="mode-btn" id="btnModeHeating" onclick="setSystemMode('heating')">🔥 热泵/PTC制热模式 (Heating)</button>
+              <button class="mode-btn active" id="btnModeCooling" onclick="setSystemMode('cooling')">❄ 制冷模式</button>
+              <button class="mode-btn" id="btnModeHeating" onclick="setSystemMode('heating')">🔥 热泵/PTC制热</button>
             </div>
             <div>
-              <button class="btn btn-outline" id="btnToggleAnim" onclick="toggleAnimation()">⏸ 暂停流体动画</button>
+              <button class="btn btn-outline" id="btnToggleAnim" onclick="toggleAnimation()">⏸ 暂停流体</button>
             </div>
           </div>
 
-          <!-- SVG P&ID Schematic -->
-          <svg viewBox="0 0 1000 520" style="width:100%; height:auto; background:#070d17; border-radius:8px;">
-            <defs>
-              <!-- Arrow markers -->
-              <marker id="arrowRed" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-                <path d="M0,0 L0,6 L6,3 z" fill="#ef4444" />
-              </marker>
-              <marker id="arrowBlue" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-                <path d="M0,0 L0,6 L6,3 z" fill="#38bdf8" />
-              </marker>
-              <marker id="arrowGreen" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-                <path d="M0,0 L0,6 L6,3 z" fill="#10b981" />
-              </marker>
-            </defs>
+          <!-- SVG Scroll Wrapper for mobile -->
+          <div class="svg-scroll-wrapper">
+            <svg viewBox="0 0 1000 520" style="width:1000px; height:520px; background:#070d17;">
+              <defs>
+                <marker id="arrowRed" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#ef4444" /></marker>
+                <marker id="arrowBlue" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#38bdf8" /></marker>
+                <marker id="arrowGreen" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#10b981" /></marker>
+              </defs>
 
-            <!-- Legend -->
-            <g transform="translate(20, 20)">
-              <line x1="0" y1="0" x2="30" y2="0" stroke="#ef4444" stroke-width="4" />
-              <text x="36" y="4" fill="#94a3b8" font-size="11">高温高压气态冷媒</text>
-              <line x1="160" y1="0" x2="190" y2="0" stroke="#f97316" stroke-width="4" />
-              <text x="196" y="4" fill="#94a3b8" font-size="11">中温高压液态冷媒</text>
-              <line x1="320" y1="0" x2="350" y2="0" stroke="#38bdf8" stroke-width="4" />
-              <text x="356" y="4" fill="#94a3b8" font-size="11">低温低压两相/气态</text>
-              <line x1="490" y1="0" x2="520" y2="0" stroke="#10b981" stroke-width="4" />
-              <text x="526" y="4" fill="#94a3b8" font-size="11">50%乙二醇冷却水回路</text>
-            </g>
+              <!-- Legend -->
+              <g transform="translate(20, 20)">
+                <line x1="0" y1="0" x2="30" y2="0" stroke="#ef4444" stroke-width="4" />
+                <text x="36" y="4" fill="#94a3b8" font-size="11">高温高压气态冷媒</text>
+                <line x1="160" y1="0" x2="190" y2="0" stroke="#f97316" stroke-width="4" />
+                <text x="196" y="4" fill="#94a3b8" font-size="11">中温高压液态冷媒</text>
+                <line x1="320" y1="0" x2="350" y2="0" stroke="#38bdf8" stroke-width="4" />
+                <text x="356" y="4" fill="#94a3b8" font-size="11">低温低压两相/气态</text>
+                <line x1="490" y1="0" x2="520" y2="0" stroke="#10b981" stroke-width="4" />
+                <text x="526" y="4" fill="#94a3b8" font-size="11">50%乙二醇水回路</text>
+              </g>
 
-            <!-- PIPES (BASE LINES) -->
-            <!-- 1. Compressor Discharge -> Condenser -->
-            <path id="pipe1" d="M 230 360 L 230 140 L 360 140" fill="none" stroke="#ef4444" stroke-width="6" />
-            <path id="anim1" d="M 230 360 L 230 140 L 360 140" fill="none" stroke="#fca5a5" stroke-width="2" class="pipe-flow" />
+              <!-- PIPES -->
+              <path id="pipe1" d="M 230 360 L 230 140 L 360 140" fill="none" stroke="#ef4444" stroke-width="6" />
+              <path id="anim1" d="M 230 360 L 230 140 L 360 140" fill="none" stroke="#fca5a5" stroke-width="2" class="pipe-flow" />
 
-            <!-- 2. Condenser -> Filter Drier -> EEV -->
-            <path id="pipe2" d="M 480 140 L 580 140 L 580 230" fill="none" stroke="#f97316" stroke-width="5" />
-            <path id="anim2" d="M 480 140 L 580 140 L 580 230" fill="none" stroke="#fdba74" stroke-width="2" class="pipe-flow" />
+              <path id="pipe2" d="M 480 140 L 580 140 L 580 230" fill="none" stroke="#f97316" stroke-width="5" />
+              <path id="anim2" d="M 480 140 L 580 140 L 580 230" fill="none" stroke="#fdba74" stroke-width="2" class="pipe-flow" />
 
-            <!-- 3. EEV -> BPHE Evaporator -->
-            <path id="pipe3" d="M 580 270 L 580 380 L 480 380" fill="none" stroke="#38bdf8" stroke-width="5" />
-            <path id="anim3" d="M 580 270 L 580 380 L 480 380" fill="none" stroke="#bae6fd" stroke-width="2" class="pipe-flow" />
+              <path id="pipe3" d="M 580 270 L 580 380 L 480 380" fill="none" stroke="#38bdf8" stroke-width="5" />
+              <path id="anim3" d="M 580 270 L 580 380 L 480 380" fill="none" stroke="#bae6fd" stroke-width="2" class="pipe-flow" />
 
-            <!-- 4. BPHE -> Accumulator -> Compressor Suction -->
-            <path id="pipe4" d="M 360 380 L 290 380 L 290 430 L 220 430 L 220 400" fill="none" stroke="#38bdf8" stroke-width="6" />
-            <path id="anim4" d="M 360 380 L 290 380 L 290 430 L 220 430 L 220 400" fill="none" stroke="#bae6fd" stroke-width="2" class="pipe-flow" />
+              <path id="pipe4" d="M 360 380 L 290 380 L 290 430 L 220 430 L 220 400" fill="none" stroke="#38bdf8" stroke-width="6" />
+              <path id="anim4" d="M 360 380 L 290 380 L 290 430 L 220 430 L 220 400" fill="none" stroke="#bae6fd" stroke-width="2" class="pipe-flow" />
 
-            <!-- WATER PIPES -->
-            <!-- Pump -> BPHE Water In -->
-            <path id="pipeW1" d="M 720 440 L 420 440 L 420 410" fill="none" stroke="#10b981" stroke-width="6" />
-            <path id="animW1" d="M 720 440 L 420 440 L 420 410" fill="none" stroke="#a7f3d0" stroke-width="2" class="pipe-water-flow" />
+              <!-- WATER PIPES -->
+              <path id="pipeW1" d="M 720 440 L 420 440 L 420 410" fill="none" stroke="#10b981" stroke-width="6" />
+              <path id="animW1" d="M 720 440 L 420 440 L 420 410" fill="none" stroke="#a7f3d0" stroke-width="2" class="pipe-water-flow" />
 
-            <!-- BPHE Water Out -> Battery Pack Cold Plate -->
-            <path id="pipeW2" d="M 420 350 L 420 300 L 740 300" fill="none" stroke="#10b981" stroke-width="6" />
-            <path id="animW2" d="M 420 350 L 420 300 L 740 300" fill="none" stroke="#a7f3d0" stroke-width="2" class="pipe-water-flow" />
+              <path id="pipeW2" d="M 420 350 L 420 300 L 740 300" fill="none" stroke="#10b981" stroke-width="6" />
+              <path id="animW2" d="M 420 350 L 420 300 L 740 300" fill="none" stroke="#a7f3d0" stroke-width="2" class="pipe-water-flow" />
 
-            <!-- Battery Pack -> PTC -> Expansion Tank -> Pump -->
-            <path id="pipeW3" d="M 880 300 L 920 300 L 920 440 L 800 440" fill="none" stroke="#10b981" stroke-width="6" />
-            <path id="animW3" d="M 880 300 L 920 300 L 920 440 L 800 440" fill="none" stroke="#a7f3d0" stroke-width="2" class="pipe-water-flow" />
+              <path id="pipeW3" d="M 880 300 L 920 300 L 920 440 L 800 440" fill="none" stroke="#10b981" stroke-width="6" />
+              <path id="animW3" d="M 880 300 L 920 300 L 920 440 L 800 440" fill="none" stroke="#a7f3d0" stroke-width="2" class="pipe-water-flow" />
 
-            <!-- COMPONENTS (INTERACTIVE SVG ELEMENTS) -->
+              <!-- COMPONENTS -->
+              <g class="interactive-comp" id="svg-comp" onclick="inspectComponent('C001')" transform="translate(190, 340)">
+                <circle cx="30" cy="30" r="34" fill="#1e293b" stroke="#0284c7" stroke-width="2.5" />
+                <text x="30" y="26" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">变频压缩机</text>
+                <text x="30" y="42" fill="#38bdf8" font-size="10" text-anchor="middle">45Hz R410A</text>
+              </g>
 
-            <!-- 1. COMPRESSOR -->
-            <g class="interactive-comp" id="svg-comp" onclick="inspectComponent('C001')" transform="translate(190, 340)">
-              <circle cx="30" cy="30" r="34" fill="#1e293b" stroke="#0284c7" stroke-width="2.5" />
-              <text x="30" y="26" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">变频压缩机</text>
-              <text x="30" y="42" fill="#38bdf8" font-size="10" text-anchor="middle">45Hz R410A</text>
-            </g>
+              <g class="interactive-comp" id="svg-mche" onclick="inspectComponent('C003')" transform="translate(360, 95)">
+                <rect x="0" y="0" width="120" height="90" rx="6" fill="#1e293b" stroke="#ef4444" stroke-width="2.5" />
+                <text x="60" y="35" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">微通道冷凝器</text>
+                <text x="60" y="55" fill="#fca5a5" font-size="10" text-anchor="middle">MCHE (迎风散热)</text>
+                <circle cx="60" cy="72" r="8" fill="#334155" />
+                <text x="60" y="75" fill="#38bdf8" font-size="9" text-anchor="middle">🌀风机</text>
+              </g>
 
-            <!-- 2. CONDENSER (MCHE) -->
-            <g class="interactive-comp" id="svg-mche" onclick="inspectComponent('C003')" transform="translate(360, 95)">
-              <rect x="0" y="0" width="120" height="90" rx="6" fill="#1e293b" stroke="#ef4444" stroke-width="2.5" />
-              <text x="60" y="35" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">微通道冷凝器</text>
-              <text x="60" y="55" fill="#fca5a5" font-size="10" text-anchor="middle">MCHE (迎风散热)</text>
-              <circle cx="60" cy="72" r="8" fill="#334155" />
-              <text x="60" y="75" fill="#38bdf8" font-size="9" text-anchor="middle">🌀风机</text>
-            </g>
+              <g class="interactive-comp" id="svg-drier" onclick="inspectComponent('C011')" transform="translate(560, 155)">
+                <rect x="0" y="0" width="40" height="30" rx="4" fill="#1e293b" stroke="#f97316" stroke-width="2" />
+                <text x="20" y="19" fill="#fed7aa" font-size="10" text-anchor="middle">干燥器</text>
+              </g>
 
-            <!-- 3. FILTER DRIER -->
-            <g class="interactive-comp" id="svg-drier" onclick="inspectComponent('C011')" transform="translate(560, 155)">
-              <rect x="0" y="0" width="40" height="30" rx="4" fill="#1e293b" stroke="#f97316" stroke-width="2" />
-              <text x="20" y="19" fill="#fed7aa" font-size="10" text-anchor="middle">干燥器</text>
-            </g>
+              <g class="interactive-comp" id="svg-eev" onclick="inspectComponent('C004')" transform="translate(555, 230)">
+                <polygon points="5,5 45,5 25,25" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5" />
+                <polygon points="5,45 45,45 25,25" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5" />
+                <text x="25" y="-6" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">电子膨胀阀</text>
+                <text x="25" y="58" fill="#38bdf8" font-size="10" text-anchor="middle">EEV: 180步</text>
+              </g>
 
-            <!-- 4. ELECTRONIC EXPANSION VALVE (EEV) -->
-            <g class="interactive-comp" id="svg-eev" onclick="inspectComponent('C004')" transform="translate(555, 230)">
-              <polygon points="5,5 45,5 25,25" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5" />
-              <polygon points="5,45 45,45 25,25" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5" />
-              <text x="25" y="-6" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">电子膨胀阀</text>
-              <text x="25" y="58" fill="#38bdf8" font-size="10" text-anchor="middle">EEV: 180步</text>
-            </g>
+              <g class="interactive-comp" id="svg-bphe" onclick="inspectComponent('C002')" transform="translate(360, 350)">
+                <rect x="0" y="0" width="120" height="60" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="2.5" />
+                <text x="60" y="26" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">板式换热器</text>
+                <text x="60" y="44" fill="#34d399" font-size="10" text-anchor="middle">BPHE (冷媒/水换热)</text>
+              </g>
 
-            <!-- 5. BPHE EVAPORATOR -->
-            <g class="interactive-comp" id="svg-bphe" onclick="inspectComponent('C002')" transform="translate(360, 350)">
-              <rect x="0" y="0" width="120" height="60" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="2.5" />
-              <text x="60" y="26" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">板式换热器</text>
-              <text x="60" y="44" fill="#34d399" font-size="10" text-anchor="middle">BPHE (冷媒/水换热)</text>
-            </g>
+              <g class="interactive-comp" id="svg-acc" onclick="inspectComponent('C007')" transform="translate(270, 395)">
+                <rect x="0" y="0" width="30" height="45" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
+                <text x="15" y="26" fill="#bae6fd" font-size="9" text-anchor="middle">气分</text>
+              </g>
 
-            <!-- 6. ACCUMULATOR -->
-            <g class="interactive-comp" id="svg-acc" onclick="inspectComponent('C007')" transform="translate(270, 395)">
-              <rect x="0" y="0" width="30" height="45" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
-              <text x="15" y="26" fill="#bae6fd" font-size="9" text-anchor="middle">气分</text>
-            </g>
+              <g class="interactive-comp" id="svg-pump" onclick="inspectComponent('C005')" transform="translate(730, 415)">
+                <circle cx="25" cy="25" r="24" fill="#1e293b" stroke="#10b981" stroke-width="2.5" />
+                <text x="25" y="22" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">直流泵</text>
+                <text x="25" y="37" fill="#6ee7b7" font-size="9" text-anchor="middle">24 L/min</text>
+              </g>
 
-            <!-- 7. WATER PUMP -->
-            <g class="interactive-comp" id="svg-pump" onclick="inspectComponent('C005')" transform="translate(730, 415)">
-              <circle cx="25" cy="25" r="24" fill="#1e293b" stroke="#10b981" stroke-width="2.5" />
-              <text x="25" y="22" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">直流泵</text>
-              <text x="25" y="37" fill="#6ee7b7" font-size="9" text-anchor="middle">24 L/min</text>
-            </g>
+              <g class="interactive-comp" transform="translate(740, 270)">
+                <rect x="0" y="0" width="140" height="60" rx="6" fill="#1e293b" stroke="#10b981" stroke-width="2" stroke-dasharray="4,2" />
+                <text x="70" y="28" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">电池包液冷板</text>
+                <text x="70" y="46" fill="#94a3b8" font-size="10" text-anchor="middle">Pack Cold Plates</text>
+              </g>
 
-            <!-- 8. BATTERY COLD PLATE -->
-            <g class="interactive-comp" transform="translate(740, 270)">
-              <rect x="0" y="0" width="140" height="60" rx="6" fill="#1e293b" stroke="#10b981" stroke-width="2" stroke-dasharray="4,2" />
-              <text x="70" y="28" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">电池包液冷板</text>
-              <text x="70" y="46" fill="#94a3b8" font-size="10" text-anchor="middle">Pack Cold Plates (电芯热源)</text>
-            </g>
+              <g class="interactive-comp" id="svg-ptc" onclick="inspectComponent('C006')" transform="translate(900, 350)">
+                <rect x="0" y="0" width="40" height="40" rx="4" fill="#1e293b" stroke="#f59e0b" stroke-width="2" />
+                <text x="20" y="24" fill="#fde68a" font-size="10" font-weight="bold" text-anchor="middle">PTC</text>
+              </g>
 
-            <!-- 9. PTC HEATER -->
-            <g class="interactive-comp" id="svg-ptc" onclick="inspectComponent('C006')" transform="translate(900, 350)">
-              <rect x="0" y="0" width="40" height="40" rx="4" fill="#1e293b" stroke="#f59e0b" stroke-width="2" />
-              <text x="20" y="24" fill="#fde68a" font-size="10" font-weight="bold" text-anchor="middle">PTC</text>
-            </g>
-
-            <!-- SENSORS -->
-            <g transform="translate(240, 160)">
-              <circle cx="0" cy="0" r="10" fill="#dc2626" />
-              <text x="0" y="4" fill="#fff" font-size="8" text-anchor="middle">高压</text>
-              <text x="36" y="4" fill="#f87171" font-size="10">2.4 MPa</text>
-            </g>
-            <g transform="translate(260, 445)">
-              <circle cx="0" cy="0" r="10" fill="#0284c7" />
-              <text x="0" y="4" fill="#fff" font-size="8" text-anchor="middle">低压</text>
-              <text x="36" y="4" fill="#38bdf8" font-size="10">0.82 MPa</text>
-            </g>
-            <g transform="translate(490, 290)">
-              <circle cx="0" cy="0" r="10" fill="#10b981" />
-              <text x="0" y="4" fill="#fff" font-size="8" text-anchor="middle">出水</text>
-              <text x="38" y="4" fill="#34d399" font-size="10">22.5 ℃</text>
-            </g>
-          </svg>
+              <!-- SENSORS -->
+              <g transform="translate(240, 160)">
+                <circle cx="0" cy="0" r="10" fill="#dc2626" />
+                <text x="0" y="4" fill="#fff" font-size="8" text-anchor="middle">高压</text>
+                <text x="36" y="4" fill="#f87171" font-size="10">2.4 MPa</text>
+              </g>
+              <g transform="translate(260, 445)">
+                <circle cx="0" cy="0" r="10" fill="#0284c7" />
+                <text x="0" y="4" fill="#fff" font-size="8" text-anchor="middle">低压</text>
+                <text x="36" y="4" fill="#38bdf8" font-size="10">0.82 MPa</text>
+              </g>
+              <g transform="translate(490, 290)">
+                <circle cx="0" cy="0" r="10" fill="#10b981" />
+                <text x="0" y="4" fill="#fff" font-size="8" text-anchor="middle">出水</text>
+                <text x="38" y="4" fill="#34d399" font-size="10">22.5 ℃</text>
+              </g>
+            </svg>
+          </div>
 
           <!-- Drawer for clicked component -->
           <div class="comp-inspect-drawer" id="compInspectDrawer">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <h3 id="inspectCompTitle" style="font-size:16px; color:#38bdf8;">变频压缩机</h3>
-              <span id="inspectCompCat" class="badge badge-blue">制冷回路动力</span>
+              <h3 id="inspectCompTitle" style="font-size:15px; color:#38bdf8;">变频压缩机</h3>
+              <span id="inspectCompCat" class="badge badge-blue">制冷动力</span>
             </div>
             <p id="inspectCompDesc" style="font-size:13px; color:#cbd5e1; line-height:1.6; margin-bottom:8px;"></p>
-            <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:12px; background:#0f172a; padding:12px; border-radius:6px; font-size:12px;">
+            <div style="display:grid; grid-template-columns:1fr; gap:8px; background:#0f172a; padding:10px; border-radius:6px; font-size:12px;">
               <div><strong>选型指标：</strong><span id="inspectCompSpecs" style="color:#94a3b8;"></span></div>
               <div><strong>失效红线：</strong><span id="inspectCompFailure" style="color:#f87171;"></span></div>
             </div>
@@ -912,25 +962,23 @@
       <section id="tab-components" class="tab-content">
         <div class="page-header">
           <h1 class="page-title">📦 零部件功能图鉴 (14大工业核心部件)</h1>
-          <p class="page-desc">液冷机组所有核心零部件的功能原理、关键选型参数、常见失效模式与维保标准（已全部同步至 Google Sheets 数据库）。</p>
+          <p class="page-desc">液冷机组所有核心零部件的功能原理、关键选型参数、常见失效模式与维保标准。</p>
         </div>
 
         <div class="pill-filter">
-          <div class="pill active" onclick="filterComponents('all', this)">全部零部件 (14)</div>
-          <div class="pill" onclick="filterComponents('refrigerant', this)">制冷剂回路部件 (6)</div>
-          <div class="pill" onclick="filterComponents('coolant', this)">乙二醇水回路部件 (5)</div>
-          <div class="pill" onclick="filterComponents('control', this)">电气与传感器部件 (3)</div>
+          <div class="pill active" onclick="filterComponents('all', this)">全部 (14)</div>
+          <div class="pill" onclick="filterComponents('refrigerant', this)">制冷回路 (6)</div>
+          <div class="pill" onclick="filterComponents('coolant', this)">水回路 (5)</div>
+          <div class="pill" onclick="filterComponents('control', this)">电控传感 (3)</div>
         </div>
 
-        <div id="componentsContainer">
-          <!-- Dynamically populated or rendered below -->
-        </div>
+        <div id="componentsContainer"></div>
       </section>
 
       <!-- Tab 3: Design -->
       <section id="tab-design" class="tab-content">
         <div class="page-header">
-          <h1 class="page-title">📐 设计研发篇 (Design & Calculation)</h1>
+          <h1 class="page-title">📐 设计研发与计算器</h1>
           <p class="page-desc">系统热负荷匹配模型、选型计算工具与 Modbus RTU 标准点位表。</p>
         </div>
 
@@ -938,7 +986,7 @@
           <!-- Calculator -->
           <div class="card">
             <div class="card-title">
-              <span>液冷机组热负荷与流量快速选型计算器</span>
+              <span>液冷机组热负荷与流量选型计算器</span>
               <span class="badge badge-green">交互工具</span>
             </div>
             <div class="calc-box">
@@ -980,27 +1028,24 @@
 
           <!-- Modbus Register Table -->
           <div class="card">
-            <div class="card-title">标准 Modbus RTU 通讯寄存器点位表 (EMS联动)</div>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>寄存器地址</th>
-                  <th>点位名称</th>
-                  <th>数据类型</th>
-                  <th>单位与说明</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td><code>0x0100</code></td><td>机组启停控制</td><td>UInt16 (W)</td><td>0=关机, 1=制冷, 2=制热, 3=自循环</td></tr>
-                <tr><td><code>0x0101</code></td><td>目标出水设定温度</td><td>Int16 (W)</td><td>0.1 ℃ (设定范围: 15.0 ~ 35.0 ℃)</td></tr>
-                <tr><td><code>0x0200</code></td><td>实际出水温度</td><td>Int16 (R)</td><td>0.1 ℃</td></tr>
-                <tr><td><code>0x0201</code></td><td>实际回水温度</td><td>Int16 (R)</td><td>0.1 ℃</td></tr>
-                <tr><td><code>0x0202</code></td><td>系统高压侧压力</td><td>UInt16 (R)</td><td>0.01 MPa</td></tr>
-                <tr><td><code>0x0203</code></td><td>系统低压侧压力</td><td>UInt16 (R)</td><td>0.01 MPa</td></tr>
-                <tr><td><code>0x0204</code></td><td>实际循环水流量</td><td>UInt16 (R)</td><td>0.1 L/min</td></tr>
-                <tr><td><code>0x0300</code></td><td>系统故障报警代码</td><td>UInt16 (R)</td><td>对应 E01~E12 (0=正常)</td></tr>
-              </tbody>
-            </table>
+            <div class="card-title">Modbus RTU 寄存器点位表 (EMS联动)</div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr><th>地址</th><th>点位</th><th>类型</th><th>说明</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>0x0100</code></td><td>机组启停控制</td><td>UInt16 (W)</td><td>0=关机, 1=制冷, 2=制热, 3=自循环</td></tr>
+                  <tr><td><code>0x0101</code></td><td>目标出水温度</td><td>Int16 (W)</td><td>0.1 ℃ (范围: 15.0 ~ 35.0 ℃)</td></tr>
+                  <tr><td><code>0x0200</code></td><td>实际出水温度</td><td>Int16 (R)</td><td>0.1 ℃</td></tr>
+                  <tr><td><code>0x0201</code></td><td>实际回水温度</td><td>Int16 (R)</td><td>0.1 ℃</td></tr>
+                  <tr><td><code>0x0202</code></td><td>高压侧压力</td><td>UInt16 (R)</td><td>0.01 MPa</td></tr>
+                  <tr><td><code>0x0203</code></td><td>低压侧压力</td><td>UInt16 (R)</td><td>0.01 MPa</td></tr>
+                  <tr><td><code>0x0204</code></td><td>实际循环水流量</td><td>UInt16 (R)</td><td>0.1 L/min</td></tr>
+                  <tr><td><code>0x0300</code></td><td>故障报警代码</td><td>UInt16 (R)</td><td>对应 E01~E12</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
@@ -1008,20 +1053,20 @@
       <!-- Tab 4: Manufacturing SOP Timeline -->
       <section id="tab-manufacturing" class="tab-content">
         <div class="page-header">
-          <h1 class="page-title">🏭 生产制造工艺 SOP 时间轴与质检红线</h1>
+          <h1 class="page-title">🏭 生产制造工艺 SOP 时间轴</h1>
           <p class="page-desc">铜管充氮钎焊 ➔ 2.8MPa 保压 ➔ 氦质谱检漏 ➔ 抽真空充注 ➔ EOL 性能测试全流程质检卡点。</p>
         </div>
 
         <div class="grid-2">
           <div class="card">
-            <div class="card-title">制造工序全流程时间轴 (点击查看质量红线)</div>
+            <div class="card-title">制造工序时间轴 (点击查看红线)</div>
             <div class="timeline">
               <div class="timeline-item">
                 <div class="timeline-dot"></div>
                 <div class="timeline-content">
                   <div class="timeline-title">工序 1：充氮保护铜管钎焊</div>
-                  <div class="timeline-gate">质量红线 QC Gate：内部无氧化皮</div>
-                  <p style="font-size:13px; color:#94a3b8; line-height:1.5;">全过程通入干燥高纯氮气（流量 3~5 L/min）。严禁氧化皮产生造成膨胀阀滤网堵塞。焊料选用 BCuP-2 磷铜钎料。</p>
+                  <div class="timeline-gate">质量红线 QC Gate：内部严禁氧化皮</div>
+                  <p style="font-size:13px; color:#94a3b8; line-height:1.5;">全过程通入干燥高纯氮气（3~5 L/min）。严禁氧化皮产生造成膨胀阀滤网堵塞。焊料选用 BCuP-2 磷铜钎料。</p>
                 </div>
               </div>
 
@@ -1056,7 +1101,7 @@
                 <div class="timeline-dot"></div>
                 <div class="timeline-content">
                   <div class="timeline-title">工序 5：EOL 出厂拉偏性能与安规测试</div>
-                  <div class="timeline-gate">质量红线 QC Gate：绝缘耐压 1500V 无击穿，COP 达标</div>
+                  <div class="timeline-gate">质量红线 QC Gate：耐压 1500V 无击穿，COP 达标</div>
                   <p style="font-size:13px; color:#94a3b8; line-height:1.5;">在环境仓内运行额定制冷量、极端高温 45℃ 拉偏工况测试，标定出水温 PID 响应及水流开关报警灵敏度。</p>
                 </div>
               </div>
@@ -1064,19 +1109,21 @@
           </div>
 
           <div class="card">
-            <div class="card-title">生产部操作岗位技能矩阵 (Skill Matrix)</div>
-            <table class="data-table">
-              <thead>
-                <tr><th>工序岗位</th><th>L1级 (上岗)</th><th>L2级 (熟练独立)</th><th>L3级 (骨干免检)</th></tr>
-              </thead>
-              <tbody>
-                <tr><td><strong>铜管钎焊</strong></td><td>掌握平焊与直管连接</td><td>充氮仰焊、全位置气密焊接</td><td>特种焊工证、不良剖析与带教</td></tr>
-                <tr><td><strong>氦检与保压</strong></td><td>基础气密测试仪连接</td><td>氦检吸枪标定与微漏定位</td><td>氦检房设备校准、泄漏率判定</td></tr>
-                <tr><td><strong>真空与充注</strong></td><td>管路连接与基础充注</td><td>真空度判定、微漏排查</td><td>充注设备校准、制冷剂回收维护</td></tr>
-                <tr><td><strong>EOL 测试</strong></td><td>依 SOP 启动测试机台</td><td>拉偏工况曲线判定、噪音甄别</td><td>测试台传感器标定、出厂终检评定</td></tr>
-                <tr><td><strong>水路总装</strong></td><td>软管接头与卡箍预紧</td><td>水压保压、管网排气消除气阻</td><td>接头扭矩复验、走管流阻优化</td></tr>
-              </tbody>
-            </table>
+            <div class="card-title">生产部操作岗位技能矩阵</div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr><th>工序岗位</th><th>L1级 (上岗)</th><th>L2级 (熟练独立)</th><th>L3级 (骨干免检)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><strong>铜管钎焊</strong></td><td>掌握平焊与直管连接</td><td>充氮仰焊、全位置气密焊接</td><td>特种焊工证、不良剖析与带教</td></tr>
+                  <tr><td><strong>氦检与保压</strong></td><td>基础气密测试仪连接</td><td>氦检吸枪标定与微漏定位</td><td>氦检房设备校准、泄漏率判定</td></tr>
+                  <tr><td><strong>真空与充注</strong></td><td>管路连接与基础充注</td><td>真空度判定、微漏排查</td><td>充注设备校准、制冷剂回收维护</td></tr>
+                  <tr><td><strong>EOL 测试</strong></td><td>依 SOP 启动测试机台</td><td>拉偏工况曲线判定、噪音甄别</td><td>测试台传感器标定、出厂终检评定</td></tr>
+                  <tr><td><strong>水路总装</strong></td><td>软管接头与卡箍预紧</td><td>水压保压、管网排气消除气阻</td><td>接头扭矩复验、走管流阻优化</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
@@ -1084,14 +1131,14 @@
       <!-- Tab 5: Guided Fault Decision Tree -->
       <section id="tab-service" class="tab-content">
         <div class="page-header">
-          <h1 class="page-title">🔧 引导式故障排查决策树 (Interactive DTC Diagnosis)</h1>
+          <h1 class="page-title">🔧 引导式故障排查决策树</h1>
           <p class="page-desc">模拟专业车载诊断仪，一步步引导售后与运维工程师排查 12 大典型工业故障。</p>
         </div>
 
         <div class="fault-tree-wizard">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-            <h3 style="font-size:16px; color:#38bdf8;">选择诊断代码：</h3>
-            <select id="faultSelect" class="form-input" style="width:260px;" onchange="loadFaultTree()">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+            <h3 style="font-size:15px; color:#38bdf8;">选择诊断代码：</h3>
+            <select id="faultSelect" class="form-input" style="width:100%; max-width:280px;" onchange="loadFaultTree()">
               <option value="E01">E01 - 系统高压报警 (High Pressure)</option>
               <option value="E02">E02 - 系统低压报警 (Low Pressure)</option>
               <option value="E03">E03 - 冷却液流速过低 (Low Water Flow)</option>
@@ -1100,24 +1147,25 @@
             </select>
           </div>
 
-          <!-- Dynamic steps container -->
           <div id="treeContainer"></div>
         </div>
 
         <div class="card">
           <div class="card-title">12 大工业级 DTC 故障字典全览</div>
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th style="width:70px;">代码</th>
-                <th style="width:140px;">报警名称</th>
-                <th style="width:90px;">严重度</th>
-                <th>触发条件</th>
-                <th>现场排查步骤与处理对策 (SOP)</th>
-              </tr>
-            </thead>
-            <tbody id="faultTableBodyFull"></tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:65px;">代码</th>
+                  <th style="width:130px;">报警名称</th>
+                  <th style="width:85px;">严重度</th>
+                  <th>触发条件</th>
+                  <th>现场排查步骤与处理对策 (SOP)</th>
+                </tr>
+              </thead>
+              <tbody id="faultTableBodyFull"></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
@@ -1125,15 +1173,15 @@
       <section id="tab-database" class="tab-content">
         <div class="page-header">
           <h1 class="page-title">📁 Google Drive 云端数据库中心</h1>
-          <p class="page-desc">项目文件与结构化数据已安全落地在您的 Google 云端硬盘中，并与 AppSheet 及本平台无缝挂载。</p>
+          <p class="page-desc">项目文件与结构化数据已安全落地在您的 Google 云端硬盘中。</p>
         </div>
 
         <div class="grid-2">
           <div class="card">
             <div class="card-title">云端目录资产挂载结构</div>
-            <div style="background:#0b1120; border:1px solid #334155; border-radius:6px; padding:14px; font-family:monospace; font-size:12px; line-height:1.7; color:#f8fafc;">
-              📁 <a href="https://drive.google.com/drive/folders/1binq2Od7BRrA72HzpGk1sYn4-swT_KLT" target="_blank" style="color:#38bdf8; font-weight:bold;">新能源电池热管理项目/</a> (总项目)<br>
-              └── 📁 <a href="https://drive.google.com/drive/folders/1B9MukrL4--iGOM3J9rKRaAIuKPq1U6m1" target="_blank" style="color:#38bdf8;">01_液冷机组学习平台/</a> (子项目)<br>
+            <div style="background:#0b1120; border:1px solid #334155; border-radius:6px; padding:12px; font-family:monospace; font-size:12px; line-height:1.7; color:#f8fafc;">
+              📁 <a href="https://drive.google.com/drive/folders/1binq2Od7BRrA72HzpGk1sYn4-swT_KLT" target="_blank" style="color:#38bdf8; font-weight:bold;">新能源电池热管理项目/</a><br>
+              └── 📁 <a href="https://drive.google.com/drive/folders/1B9MukrL4--iGOM3J9rKRaAIuKPq1U6m1" target="_blank" style="color:#38bdf8;">01_液冷机组学习平台/</a><br>
               &nbsp;&nbsp;&nbsp;&nbsp;├── 📁 00_数据库/ ➔ 📊 <a href="https://docs.google.com/spreadsheets/d/16DZHyBPjhmPFJqF4GW9iJ12KR4hUODWLgGBBV_JH2qk/edit" target="_blank" style="color:#34d399; font-weight:bold;">BTMS_Data_Master (在线表格)</a><br>
               &nbsp;&nbsp;&nbsp;&nbsp;├── 📁 01_产品原理篇/<br>
               &nbsp;&nbsp;&nbsp;&nbsp;├── 📁 02_零部件功能详解篇/<br>
@@ -1144,16 +1192,18 @@
           </div>
 
           <div class="card">
-            <div class="card-title">Google Sheets 4大子表当前扩充规模</div>
-            <table class="data-table">
-              <thead><tr><th>工作表</th><th>当前记录</th><th>涵盖关键范围</th></tr></thead>
-              <tbody>
-                <tr><td><strong>Component_Lib</strong></td><td><strong>14 个核心件</strong></td><td>压缩机、板换、MCHE、EEV、水泵、PTC、四通阀等</td></tr>
-                <tr><td><strong>Fault_Dict</strong></td><td><strong>12 个故障码</strong></td><td>E01(高压)~E12(低液位) 全覆盖</td></tr>
-                <tr><td><strong>Article_Master</strong></td><td><strong>10 篇大纲</strong></td><td>热负荷计算书、充氮焊接规范、EOL规程等</td></tr>
-                <tr><td><strong>Skill_Matrix</strong></td><td><strong>5 大工序</strong></td><td>钎焊、氦检、抽真空充注、总装、电检 L1~L3 矩阵</td></tr>
-              </tbody>
-            </table>
+            <div class="card-title">Google Sheets 4大子表规模</div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead><tr><th>工作表</th><th>当前记录</th><th>涵盖关键范围</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Component_Lib</strong></td><td><strong>14 个核心件</strong></td><td>压缩机、板换、MCHE、EEV、水泵、PTC、四通阀等</td></tr>
+                  <tr><td><strong>Fault_Dict</strong></td><td><strong>12 个故障码</strong></td><td>E01(高压)~E12(低液位) 全覆盖</td></tr>
+                  <tr><td><strong>Article_Master</strong></td><td><strong>10 篇大纲</strong></td><td>热负荷计算书、充氮焊接规范、EOL规程等</td></tr>
+                  <tr><td><strong>Skill_Matrix</strong></td><td><strong>5 大工序</strong></td><td>钎焊、氦检、抽真空充注、总装、电检 L1~L3 矩阵</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
@@ -1172,6 +1222,23 @@
       database: '📁 Google Drive 数据库'
     };
 
+    function toggleSidebar() {
+      const sb = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sb.classList.toggle('open');
+      overlay.classList.toggle('active');
+    }
+
+    function navTo(tabId) {
+      switchTab(tabId);
+      const sb = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      if (sb.classList.contains('open')) {
+        sb.classList.remove('open');
+        overlay.classList.remove('active');
+      }
+    }
+
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -1186,24 +1253,25 @@
         }
       });
       document.getElementById('currentTabLabel').innerText = tabLabels[tabId] || tabId;
+      document.querySelector('.content-viewport').scrollTop = 0;
     }
 
     // 14 Core Components Dataset
     const compData = {
-      C001: { name: '① 变频转子/涡旋压缩机', cat: 'refrigerant', badge: '制冷回路动力', desc: '吸入板式换热器出来的低温低压气态制冷剂，通过电驱转子旋转压缩腔体容积，将其提升为高温高压气体，驱动冷媒全系统循环。根据出水温 PID 算法进行 30~90Hz 无级变频调速。', specs: '排量: 15~45cc/rev, 额定COP: 3.2~3.8, 电压: DC 24V/48V 或 AC 380V', failure: '吸气带液导致液击打碎阀片；长期缺油干磨卡缸；变频板 IPM 模块过温烧毁。' },
-      C002: { name: '② 板式换热器 / 蒸发器', cat: 'coolant', badge: '气液相变换热', desc: '由一组冲压人字形波纹的不锈钢板真空钎焊而成。低温低压制冷剂在板间流道沸腾汽化吸热，将另一侧板间流动的乙二醇水溶液降温，完成对电池包循环液的冷却。', specs: '换热面积: 0.8~2.5 m², 阻力降: ≤35 kPa, 承压: 4.5 MPa', failure: '水流断流结冰胀破串腔（水进冷媒系统）；乙二醇防腐变质导致析出物结垢堵塞。' },
-      C003: { name: '③ 微通道冷凝器 (MCHE)', cat: 'refrigerant', badge: '对空散热核心', desc: '采用扁平多孔铝扁管与百叶窗形翅片焊接而成。高温高压气态冷媒在细微通道中流动，由轴流风机强力吹风带走热量，冷凝成中温高压液体。散热效率提升 30%，充注量减少 40%。', specs: '耐压: 4.5 MPa, 迎风风速: 2.5~4.0 m/s, 盐雾耐受: ≥1000h', failure: '翅片被柳絮灰尘糊死致高压报警；多孔扁管焊缝微漏；风机故障停转。' },
-      C004: { name: '④ 电子膨胀阀 (EEV)', cat: 'refrigerant', badge: '精密节流核心', desc: '由步进电机驱动针阀，接受主板脉冲信号（0~500 步）。通过精准调节节流流通截面积，实现高压液态冷媒减压降温，并根据吸气过热度实时微调流量，实现精确的制冷量调节。', specs: '脉冲范围: 0~500 steps, 口径: 1.3~2.4 mm, 调节精度: ±1 step', failure: '杂质卡死阀口；步进电机线圈开路；过热度异常波动引起系统振荡。' },
-      C005: { name: '⑤ 无刷直流屏蔽水泵', cat: 'coolant', badge: '水流循环心脏', desc: '采用转子屏蔽套密封设计，电机定子与转子之间无机械轴封，彻底杜绝外漏。由直流无刷电机驱动叶轮高速旋转，为整个回路的冷却液提供克服管阻、板换阻力及电池包液冷板流阻的扬程动力。', specs: '流量: 15~60 L/min, 扬程: 8~18 mH2O, 调速: PWM / CAN', failure: '无水干转烧毁陶瓷轴承；管路气阻气蚀；低温防冻液粘度过高堵转。' },
-      C006: { name: '⑥ PTC 液体加热器', cat: 'coolant', badge: '低温预热保驾', desc: '利用正温度系数热敏电阻陶瓷片的自限温特性。在冬季极寒工况（环境温度低于 0℃ 或 -20℃）下开启，给循环冷却液加热，使电池电芯温度迅速升至 15℃ 以上的适宜充放电温度。', specs: '功率: 3~10 kW, 绝缘耐压: ≥2500V, 工作电压: AC 220V/380V 或 高压DC', failure: '水流断开干烧导致热保护器跳脱；电气绝缘老化引起漏电停机。' },
+      C001: { name: '① 变频转子/涡旋压缩机', cat: 'refrigerant', badge: '制冷动力', desc: '吸入板式换热器出来的低温低压气态制冷剂，通过电驱转子旋转压缩腔体容积，将其提升为高温高压气体，驱动冷媒全系统循环。根据出水温 PID 算法进行 30~90Hz 无级变频调速。', specs: '排量: 15~45cc/rev, COP: 3.2~3.8, 电压: DC 24V/48V 或 AC 380V', failure: '吸气带液导致液击打碎阀片；长期缺油干磨卡缸；变频板 IPM 模块过温烧毁。' },
+      C002: { name: '② 板式换热器 / 蒸发器', cat: 'coolant', badge: '相变换热', desc: '由一组冲压人字形波纹的不锈钢板真空钎焊而成。低温低压制冷剂在板间流道沸腾汽化吸热，将另一侧板间流动的乙二醇水溶液降温，完成对电池包循环液的冷却。', specs: '面积: 0.8~2.5 m², 阻力降: ≤35 kPa, 承压: 4.5 MPa', failure: '水流断流结冰胀破串腔（水进冷媒系统）；防腐变质导致析出物结垢堵塞。' },
+      C003: { name: '③ 微通道冷凝器 (MCHE)', cat: 'refrigerant', badge: '散热核心', desc: '采用扁平多孔铝扁管与百叶窗形翅片焊接而成。高温高压气态冷媒在细微通道中流动，由轴流风机强力吹风带走热量，冷凝成中温高压液体。散热效率提升 30%，充注量减少 40%。', specs: '耐压: 4.5 MPa, 迎风风速: 2.5~4.0 m/s, 盐雾: ≥1000h', failure: '翅片被柳絮灰尘糊死致高压报警；多孔扁管焊缝微漏；风机故障停转。' },
+      C004: { name: '④ 电子膨胀阀 (EEV)', cat: 'refrigerant', badge: '精密节流', desc: '由步进电机驱动针阀，接受主板脉冲信号（0~500 步）。通过精准调节节流流通截面积，实现高压液态冷媒减压降温，并根据吸气过热度实时微调流量，实现精确的制冷量调节。', specs: '范围: 0~500 steps, 口径: 1.3~2.4 mm, 精度: ±1 step', failure: '杂质卡死阀口；步进电机线圈开路；过热度异常波动引起系统振荡。' },
+      C005: { name: '⑤ 无刷直流屏蔽水泵', cat: 'coolant', badge: '水流心脏', desc: '采用转子屏蔽套密封设计，电机定子与转子之间无机械轴封，彻底杜绝外漏。由直流无刷电机驱动叶轮高速旋转，为整个回路的冷却液提供克服管阻、板换阻力及电池包液冷板流阻的扬程动力。', specs: '流量: 15~60 L/min, 扬程: 8~18 mH2O, 调速: PWM / CAN', failure: '无水干转烧毁陶瓷轴承；管路气阻气蚀；低温防冻液粘度过高堵转。' },
+      C006: { name: '⑥ PTC 液体加热器', cat: 'coolant', badge: '低温预热', desc: '利用正温度系数热敏电阻陶瓷片的自限温特性。在冬季极寒工况（环境温度低于 0℃ 或 -20℃）下开启，给循环冷却液加热，使电池电芯温度迅速升至 15℃ 以上的适宜充放电温度。', specs: '功率: 3~10 kW, 绝缘耐压: ≥2500V, 工作电压: AC 220V/380V 或 高压DC', failure: '水流断开干烧导致热保护器跳脱；电气绝缘老化引起漏电停机。' },
       C007: { name: '⑦ 气液分离器', cat: 'refrigerant', badge: '防液击卫士', desc: '气液混合制冷剂切向进入容器，利用重力与离心力将液态制冷剂沉积在底部，气态冷媒从上方弯管吸入压缩机，彻底防止压缩机“液击”。底部设有微孔回油弯管，使冷冻机油随少量气体回流。', specs: '容积: 1.0~2.5 L, 回油孔口径: 1.2 mm', failure: '底部回油孔被杂质油泥堵塞导致压缩机缺油烧毁；接口振动微漏。' },
-      C008: { name: '⑧ 高低压压力变送器', cat: 'control', badge: '传感与安全闭环', desc: '高压传感器监测压缩机排气压力，低压传感器监测吸气压力。将机械压力实时转化为 0.5~4.5V 或 4~20mA 模拟电信号传入 MCU，作为计算饱和蒸发/冷凝温度、过热度控制及高低压跳脱保护的核心输入。', specs: '高压: 0~4.5 MPa, 低压: 0~1.6 MPa, 精度: ±1% FS', failure: '传感器零点漂移引起误报警；线束屏蔽不良受变频谐波干扰跳变。' },
-      C009: { name: '⑨ 四通换向阀', cat: 'refrigerant', badge: '热泵双向换向', desc: '通过先导电磁阀控制主阀体两端滑块压差，改变高低压冷媒流向，使冷凝器与蒸发器的功能互换，实现热泵高效制热循环（制热 COP 通常比纯 PTC 省电 50% 以上）。', specs: '动作最小压差: ≥0.04 MPa, 线圈电压: AC 220V / DC 24V', failure: '系统压差过小滑块停在半换向；尼龙阀座磨损引起高低压串气。' },
-      C010: { name: '⑩ 电子三通比例调节阀', cat: 'coolant', badge: '水路精确混水', desc: '通过步进或伺服电机调节阀芯开度比例，将板换出水与回水按比例混合，控制水路是否走机组大循环或机内小旁通，实现大温差过渡季节的精确微调。', specs: 'Kv 值: 2.5~6.3, 驱动: 0~10V / PWM, 行程时间: 15s', failure: '水垢或管路焊渣卡死阀芯；执行机构内部齿轮打滑。' },
-      C011: { name: '⑪ 干燥过滤器', cat: 'refrigerant', badge: '管路滤水滤酸', desc: '串联在冷凝器出液口与电子膨胀阀之间。内部填充实心分子筛干燥剂与过滤棉网，高强度吸附系统残存微量水分与焊渣微粒，彻底杜绝膨胀阀发生“冰堵”与“脏堵”。', specs: '吸水能力: 100% 分子筛, 允许压降: ≤0.02 MPa', failure: '滤网脏堵引起进出温差大于 1℃；分子筛饱和酸蚀。' },
-      C012: { name: '⑫ 自动排气阀与膨胀水箱', cat: 'coolant', badge: '定压消泡气囊', desc: '膨胀水箱内置橡胶气囊预充氮气，缓冲冷却液温度剧烈变化产生的体积膨胀；微气泡自动排气阀置于水回路最高点，自动分离并排出游离微细气泡，防止水泵气蚀及流量传感器误报。', specs: '水箱容积: 3~8 L, 预充气压: 0.6 bar, 排气阈值: 微气泡', failure: '气门芯漏气导致水压波动失控；排气阀微孔被杂质糊死。' },
-      C013: { name: '⑬ 靶式 / 压差水流开关', cat: 'control', badge: '断流保护红线', desc: '水流推动靶片微动开关或利用板换两端压差传感器检测实际流动。只要循环断流或流量低于临界值，毫秒级断开信号联锁停掉压缩机与 PTC，避免板换结冰爆裂或加热器干烧。', specs: '动作流量: 6~12 L/min, 耐压: 1.6 MPa, 触点: 250V 5A', failure: '靶片金属疲劳折断；微动开关触点受潮氧化氧化接触不良。' },
-      C014: { name: '⑭ 智能驱控一体主板', cat: 'control', badge: '中央处理大脑', desc: '采用汽车级 32 位微处理器 (MCU) 集成矢量变频控制驱动 (FOC)。负责采集进出水温、高低压传感器数据，运行 PID 算法驱动压缩机、水泵与膨胀阀，并通过 RS485 / CAN 与外部 BMS/EMS 联动。', specs: '供电: DC 24V/48V, IPM: 15~30A, 隔离耐压: 1500V', failure: '通讯接口遭雷击浪涌烧毁；散热不良导致 IPM 模块热击穿。' }
+      C008: { name: '⑧ 高低压压力变送器', cat: 'control', badge: '安全传感', desc: '高压传感器监测压缩机排气压力，低压传感器监测吸气压力。将机械压力实时转化为 0.5~4.5V 或 4~20mA 模拟电信号传入 MCU，作为计算饱和蒸发/冷凝温度、过热度控制及高低压跳脱保护的核心输入。', specs: '高压: 0~4.5 MPa, 低压: 0~1.6 MPa, 精度: ±1% FS', failure: '传感器零点漂移引起误报警；线束屏蔽不良受变频谐波干扰跳变。' },
+      C009: { name: '⑨ 四通换向阀', cat: 'refrigerant', badge: '热泵换向', desc: '通过先导电磁阀控制主阀体两端滑块压差，改变高低压冷媒流向，使冷凝器与蒸发器的功能互换，实现热泵高效制热循环（制热 COP 通常比纯 PTC 省电 50% 以上）。', specs: '动作最小压差: ≥0.04 MPa, 线圈电压: AC 220V / DC 24V', failure: '系统压差过小滑块停在半换向；尼龙阀座磨损引起高低压串气。' },
+      C010: { name: '⑩ 电子三通比例调节阀', cat: 'coolant', badge: '精确混水', desc: '通过步进或伺服电机调节阀芯开度比例，将板换出水与回水按比例混合，控制水路是否走机组大循环或机内小旁通，实现大温差过渡季节的精确微调。', specs: 'Kv 值: 2.5~6.3, 驱动: 0~10V / PWM, 行程时间: 15s', failure: '水垢或管路焊渣卡死阀芯；执行机构内部齿轮打滑。' },
+      C011: { name: '⑪ 干燥过滤器', cat: 'refrigerant', badge: '管路净化', desc: '串联在冷凝器出液口与电子膨胀阀之间。内部填充实心分子筛干燥剂与过滤棉网，高强度吸附系统残存微量水分与焊渣微粒，彻底杜绝膨胀阀发生“冰堵”与“脏堵”。', specs: '吸水能力: 100% 分子筛, 允许压降: ≤0.02 MPa', failure: '滤网脏堵引起进出温差大于 1℃；分子筛饱和酸蚀。' },
+      C012: { name: '⑫ 自动排气阀与膨胀水箱', cat: 'coolant', badge: '定压消泡', desc: '膨胀水箱内置橡胶气囊预充氮气，缓冲冷却液温度剧烈变化产生的体积膨胀；微气泡自动排气阀置于水回路最高点，自动分离并排出游离微细气泡，防止水泵气蚀及流量传感器误报。', specs: '水箱容积: 3~8 L, 预充气压: 0.6 bar', failure: '气门芯漏气导致水压波动失控；排气阀微孔被杂质糊死。' },
+      C013: { name: '⑬ 靶式 / 压差水流开关', cat: 'control', badge: '断流保护', desc: '水流推动靶片微动开关或利用板换两端压差传感器检测实际流动。只要循环断流或流量低于临界值，毫秒级断开信号联锁停掉压缩机与 PTC，避免板换结冰爆裂或加热器干烧。', specs: '动作流量: 6~12 L/min, 耐压: 1.6 MPa', failure: '靶片金属疲劳折断；微动开关触点受潮氧化氧化接触不良。' },
+      C014: { name: '⑭ 智能驱控一体主板', cat: 'control', badge: '控制大脑', desc: '采用汽车级 32 位微处理器 (MCU) 集成矢量变频控制驱动 (FOC)。负责采集进出水温、高低压传感器数据，运行 PID 算法驱动压缩机、水泵与膨胀阀，并通过 RS485 / CAN 与外部 BMS/EMS 联动。', specs: '供电: DC 24V/48V, IPM: 15~30A, 隔离耐压: 1500V', failure: '通讯接口遭雷击浪涌烧毁；散热不良导致 IPM 模块热击穿。' }
     };
 
     function inspectComponent(code) {
@@ -1243,16 +1311,15 @@
       const anims = document.querySelectorAll('.pipe-flow, .pipe-water-flow');
       if (isAnimPlaying) {
         anims.forEach(el => el.style.animationPlayState = 'paused');
-        btn.innerText = '▶ 恢复流体动画';
+        btn.innerText = '▶ 恢复流体';
         isAnimPlaying = false;
       } else {
         anims.forEach(el => el.style.animationPlayState = 'running');
-        btn.innerText = '⏸ 暂停流体动画';
+        btn.innerText = '⏸ 暂停流体';
         isAnimPlaying = true;
       }
     }
 
-    // Render Component Cards
     function renderComponentCards() {
       const container = document.getElementById('componentsContainer');
       container.innerHTML = '';
